@@ -1,0 +1,52 @@
+{
+  "description": "Paramètres par défaut pour les calculs de réseau de ventilation",
+  
+  "vitesses_max": {
+    "habitations": 4.0,
+    "combles": 6.0,
+    "bureaux": 5.0,
+    "industriel": 8.0,
+    "global": 4.0
+  },
+  
+  "fluide": {
+    "nom": "Air",
+    "masse_volumique": 1.2,
+    "unite_masse_volumique": "kg/m³",
+    "temperature_reference": 20,
+    "unite_temperature": "°C"
+  },
+  
+  "materiaux": {
+    "acier_galvanise": {
+      "coefficient_frottement": 0.02,
+      "description": "Conduits en acier galvanisé (approximation standard)"
+    },
+    "aluminium": {
+      "coefficient_frottement": 0.018,
+      "description": "Conduits en aluminium"
+    },
+    "pvc": {
+      "coefficient_frottement": 0.015,
+      "description": "Conduits en PVC lisse"
+    },
+    "flexible": {
+      "coefficient_frottement": 0.025,
+      "description": "Conduits flexibles (plus grandes pertes)"
+    }
+  },
+  
+  "materiau_defaut": "acier_galvanise",
+  
+  "pertes_charge": {
+    "formule": "ΔP = λ × (L/D) × (ρ × V²)/2",
+    "unite": "Pa (Pascals)"
+  },
+  
+  "affichage": {
+    "decimales_diametre": 0,
+    "decimales_vitesse": 2,
+    "decimales_pertes_charge": 2,
+    "decimales_debit": 0
+  }
+}

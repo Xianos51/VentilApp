@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' file: data: blob:; script-src 'self' 'unsafe-inline' file: data: blob:; style-src 'self' 'unsafe-inline' file: data: blob:; img-src 'self' data: blob: file:; font-src 'self' file: data:; connect-src 'self' file: data: blob:">
+
+  <title>Réseau Ventilation Pro - NF DTU 65.14</title>
+
+  
+  
+  
+<!-- Fabric.js - Local -->
+
+  <script src="../node_modules/fabric/dist/fabric.js"></script>
+
+  <!-- jsPDF - Local -->
+
+  <script src="../node_modules/jspdf/dist/jspdf.umd.min.js"></script>
+
+  <!-- html2canvas - Local -->
+
+  <script src="../node_modules/html2canvas/dist/html2canvas.min.js"></script>
+
+  <!-- Font Awesome - Local -->
+
+  <!-- Handsontable CSS - Local -->
+  <link rel="stylesheet" href="../node_modules/handsontable/dist/handsontable.full.min.css">
+  <!-- Handsontable JS - Local -->
+  <script src="../node_modules/handsontable/dist/handsontable.full.min.js"></script>
+  <script>Handsontable.licenseKey = 'non-commercial-and-evaluation';</script>
+
+  <link rel="stylesheet" href="../node_modules/@fortawesome/fontawesome-free/css/all.min.css">
+
+  <!-- Nos styles -->
+
+  <link rel="stylesheet" href="styles.css">
+
+</head>
+
+<body>
+
+  <script>
+
+    // Vérification de base
+
+    if (!window.electronAPI) {
+
+      // REMOVED: <strong>ERREUR:</strong> electronAPI non chargé. 
+
+      // electronAPI availability check (preload.js loads before DOM)
+
+    }
+
+    // Définir jsPDF globalement
+
+    if (window.jspdf) {
+
+      window.jsPDF = window.jspdf;
+
+    }
+
+  </script>
+
+  <!-- Barre de statut -->
+
+  <div id="status-bar" class="status-bar">
+
+    <div class="status-left">
+
+      <span id="current-volet">Volet 1 - Tableur</span>
+
+    </div>
+
+    <div class="status-center">
+
+      <span id="status-message"></span>
+
+    </div>
+
+    <div class="status-right">
+
+      <span id="project-status">Aucun projet</span>
+
+    </div>
+
+  </div>
+
+  <!-- Barre d'outils principale -->
+
+  <div id="toolbar" class="toolbar">
+
+    <div class="toolbar-group">
+
+      <button id="btn-new" class="tool-btn" title="Nouveau projet (Ctrl+N)">
+
+        <i class="fas fa-file"></i> Nouveau
+
+      </button>
+
+      <button id="btn-open" class="tool-btn" title="Ouvrir (Ctrl+O)">
+
+        <i class="fas fa-folder-open"></i> Ouvrir
+
+      </button>
+
+      <button id="btn-save" class="tool-btn" title="Enregistrer (Ctrl+S)">
+
+        <i class="fas fa-save"></i> Enregistrer
+
+      </button>
+
+    </div>
+
+    <div class="toolbar-group">
+
+      <button id="btn-volet-tableur" class="tool-btn active" title="Tableur (Ctrl+1)">
+
+        <i class="fas fa-table"></i> Tableur
+
+      </button>
+
+      <button id="btn-volet-dessin" class="tool-btn" title="Dessin (Ctrl+2)">
+
+        <i class="fas fa-drafting-compass"></i> Dessin
+
+      </button>
+
+    </div>
+
+    <div class="toolbar-group">
+
+      <button id="btn-calculate" class="tool-btn" title="Calculer tout (F5)">
+
+        <i class="fas fa-calculator"></i> Calculer
+
+      </button>
+
+      <button id="btn-check" class="tool-btn" title="Verifier coherence (F6)">
+
+        <i class="fas fa-check-circle"></i> Verifier
+
+      </button>
+
+    </div>
+
+    <div class="toolbar-group">
+
+      <button id="btn-export-csv" class="tool-btn" title="Exporter CSV">
+
+        <i class="fas fa-file-csv"></i> CSV
+
+      </button>
+
+      <button id="btn-export-pdf" class="tool-btn" title="Exporter PDF">
+
+        <i class="fas fa-file-pdf"></i> PDF
+
+      </button>
+
+      <button id="btn-export-dxf" class="tool-btn" title="Exporter DXF">
+
+        <i class="fas fa-file-code"></i> DXF
+
+      </button>
+
+      <button id="btn-export-json" class="tool-btn" title="Exporter JSON">
+
+        <i class="fas fa-file-export"></i> JSON
+
+      </button>
+
+      <button id="btn-import-csv" class="tool-btn" title="Importer CSV">
+
+        <i class="fas fa-file-import"></i> Importer
+
+      </button>
+
+    </div>
+
+    <div class="toolbar-group right">
+
+      <button id="btn-help" class="tool-btn" title="Aide">
+
+        <i class="fas fa-question-circle"></i> Aide
+
+      </button>
+
+      <button id="btn-settings" class="tool-btn" title="Preferences">
+
+        <i class="fas fa-cog"></i> Preferences
+
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- Conteneur principal -->
+
+  <div id="main-container" class="main-container">
+
+    <!-- Volet 1 - Tableur -->
+
+    <div id="volet-tableur" class="volet active">
+
+      <div class="volet-header">
+
+        <h2>Tableur de calcul - NF DTU 65.14</h2>
+
+        <div class="volet-actions">
+
+          <button id="tableur-add-row" class="btn btn-small">
+
+            <i class="fas fa-plus"></i> Ligne
+
+          </button>
+
+          <button id="tableur-remove-row" class="btn btn-small btn-danger">
+
+            <i class="fas fa-minus"></i> Ligne
+
+          </button>
+
+          <button id="tableur-clear" class="btn btn-small btn-warning">
+
+            <i class="fas fa-trash"></i> Tout effacer
+
+          </button>
+
+        </div>
+
+      </div>
+
+      <div class="tableur-controls">
+
+        <div class="control-group">
+
+          <label for="vitesse-max-global">Vitesse max globale (m/s):</label>
+
+          <input type="number" id="vitesse-max-global" value="4" step="0.1" min="0.1" max="20">
+
+        </div>
+
+        <div class="control-group">
+
+          <label for="materiau-select">Materiau:</label>
+
+          <select id="materiau-select">
+
+            <option value="acier_galvanise">Acier galvanise</option>
+
+            <option value="aluminium">Aluminium</option>
+
+            <option value="pvc">PVC</option>
+
+            <option value="flexible">Flexible</option>
+
+          </select>
+
+        </div>
+
+        <div class="control-group">
+
+          <button id="tableur-apply-all" class="btn btn-small">
+
+            <i class="fas fa-sync"></i> Appliquer a tout
+
+          </button>
+
+        </div>
+
+      </div>
+
+      <div id="handsontable-container" class="handsontable-container"></div>
+
+      <div class="tableur-footer">
+
+        <div class="summary">
+
+          <span>Lignes: <span id="tableur-row-count">0</span></span>
+
+          <span>| Diametre total: <span id="tableur-total-diametre">0 mm</span></span>
+
+          <span>| Pertes totales: <span id="tableur-total-pertes">0 Pa</span></span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Volet 2 - Dessin -->
+
+    <div id="volet-dessin" class="volet">
+
+      <div class="volet-header">
+
+        <h2>Dessin du reseau de ventilation</h2>
+
+        <div class="volet-actions">
+
+          <button id="dessin-clear" class="btn btn-small btn-danger">
+
+            <i class="fas fa-trash"></i> Tout effacer
+
+          </button>
+
+          <button id="dessin-zoom-in" class="btn btn-small">
+
+            <i class="fas fa-search-plus"></i>
+
+          </button>
+
+          <button id="dessin-zoom-out" class="btn btn-small">
+
+            <i class="fas fa-search-minus"></i>
+
+          </button>
+
+          <button id="dessin-zoom-fit" class="btn btn-small">
+
+            <i class="fas fa-compress"></i>
+
+          </button>
+
+        </div>
+
+      </div>
+
+      <div class="dessin-toolbar">
+
+        <div class="draw-tools">
+
+          <button id="tool-select" class="draw-tool active" data-tool="select" title="Selectionner">
+
+            <i class="fas fa-mouse-pointer"></i>
+
+          </button>
+
+          <button id="tool-gaine" class="draw-tool" data-tool="gaine" title="Gaine">
+
+            <i class="fas fa-rectangle"></i>
+
+          </button>
+
+          <button id="tool-bouche" class="draw-tool" data-tool="bouche" title="Bouche">
+
+            <i class="fas fa-circle"></i>
+
+          </button>
+
+          <button id="tool-caisson" class="draw-tool" data-tool="caisson" title="Caisson">
+
+            <i class="fas fa-cube"></i>
+
+          </button>
+
+          <button id="tool-coude" class="draw-tool" data-tool="coude" title="Coude">
+
+            <i class="fas fa-undo"></i>
+
+          </button>
+
+        </div>
+
+        <div class="draw-options">
+
+          <label for="dessin-snap">
+
+            <input type="checkbox" id="dessin-snap" checked> Accroche
+
+          </label>
+
+          <label for="dessin-grid">
+
+            <input type="checkbox" id="dessin-grid" checked> Grille
+
+          </label>
+
+        </div>
+
+      </div>
+
+      <div class="dessin-area">
+
+        <canvas willReadFrequently id="canvas-dessin" width="1200" height="700"></canvas>
+
+        <div id="canvas-overlay" class="canvas-overlay"></div>
+
+      </div>
+
+      <div class="dessin-footer">
+
+        <div class="summary">
+
+          <span>Elements: <span id="dessin-element-count">0</span></span>
+
+          <span>| Troncons: <span id="dessin-troncon-count">0</span></span>
+
+          <span>| Total debit: <span id="dessin-total-debit">0 m3/h</span></span>
+
+          <span>| Total DP: <span id="dessin-total-dp">0 Pa</span></span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Panneau lateral des proprietes -->
+
+  <div id="properties-panel" class="properties-panel">
+
+    <div class="properties-header">
+
+      <h3>Proprietes</h3>
+
+      <button id="properties-close" class="btn-close">
+
+        <i class="fas fa-times"></i>
+
+      </button>
+
+    </div>
+
+    <div id="properties-content" class="properties-content">
+
+      <div id="properties-empty" class="properties-empty">
+
+        <i class="fas fa-info-circle"></i>
+
+        <p>Selectionnez un element pour afficher ses proprietes</p>
+
+      </div>
+
+      <form id="properties-form" class="properties-form hidden">
+
+        <input type="hidden" id="property-id">
+
+        <input type="hidden" id="property-type">
+
+        <div class="form-section">
+
+          <h4>Identification</h4>
+
+          <div class="form-group">
+
+            <label for="property-nom">Nom:</label>
+
+            <input type="text" id="property-nom" class="form-input">
+
+          </div>
+
+        </div>
+
+        <div class="form-section" id="property-section-debit">
+
+          <h4>Debit</h4>
+
+          <div class="form-group">
+
+            <label for="property-debit">Debit (m3/h):</label>
+
+            <input type="number" id="property-debit" class="form-input" step="1" min="0">
+
+          </div>
+
+        </div>
+
+        <div class="form-section" id="property-section-diametre">
+
+          <h4>Geometrie</h4>
+
+          <div class="form-group">
+
+            <label for="property-diametre">Diametre (mm):</label>
+
+            <select id="property-diametre" class="form-input">
+
+              <option value="80">80</option>
+
+              <option value="100">100</option>
+
+              <option value="125">125</option>
+
+              <option value="160">160</option>
+
+              <option value="200">200</option>
+
+              <option value="250">250</option>
+
+              <option value="315">315</option>
+
+              <option value="400">400</option>
+
+              <option value="500">500</option>
+
+              <option value="630">630</option>
+
+              <option value="800">800</option>
+
+              <option value="1000">1000</option>
+
+            </select>
+
+          </div>
+
+          <div class="form-group">
+
+            <label for="property-longueur">Longueur (m):</label>
+
+            <input type="number" id="property-longueur" class="form-input" step="0.01" min="0">
+
+          </div>
+
+        </div>
+
+        <div class="form-section" id="property-section-caisson">
+
+          <h4>Type de caisson</h4>
+
+          <div class="form-group">
+
+            <label for="property-type-caisson">Type:</label>
+
+            <select id="property-type-caisson" class="form-input">
+
+              <option value="insufflation">Insufflation</option>
+
+              <option value="extraction">Extraction</option>
+
+              <option value="double_flux">Double flux</option>
+
+            </select>
+
+          </div>
+
+        </div>
+
+        <div class="form-section" id="property-section-bouche">
+
+          <h4>Type de bouche</h4>
+
+          <div class="form-group">
+
+            <label for="property-type-bouche">Type:</label>
+
+            <select id="property-type-bouche" class="form-input">
+
+              <option value="entree">Entree d'air</option>
+
+              <option value="sortie">Sortie d'air</option>
+
+              <option value="reprise">Reprise</option>
+
+            </select>
+
+          </div>
+
+        </div>
+
+        <div class="form-section" id="property-section-singularites">
+
+          <h4>Singularites</h4>
+
+          <div class="form-group">
+
+            <label for="property-singularites">Type de singularite:</label>
+
+            <select id="property-singularites" class="form-input">
+
+              <option value="coude_90">Coude 90 (K=0.25)</option>
+
+              <option value="coude_45">Coude 45 (K=0.15)</option>
+
+              <option value="t_branchement">T branche (K=0.5)</option>
+
+              <option value="t_droit">T droit (K=0.3)</option>
+
+              <option value="y_branchement">Y branche (K=0.4)</option>
+
+              <option value="reduction">Reduction (K=0.1)</option>
+
+            </select>
+
+          </div>
+
+        </div>
+
+        <div class="form-actions">
+
+          <button type="button" id="properties-apply" class="btn btn-primary">
+
+            <i class="fas fa-check"></i> Appliquer
+
+          </button>
+
+          <button type="button" id="properties-cancel" class="btn btn-secondary">
+
+            <i class="fas fa-times"></i> Annuler
+
+          </button>
+
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+
+  <!-- Modales -->
+
+  <div id="modal-about" class="modal">
+
+    <div class="modal-content">
+
+      <div class="modal-header">
+
+        <h2>About Reseau Ventilation Pro</h2>
+
+        <button class="modal-close">&times;</button>
+
+      </div>
+
+      <div class="modal-body">
+
+        <div class="app-info">
+
+          <h3>Reseau Ventilation Pro</h3>
+
+          <p>Version 1.0.0</p>
+
+          <p>Application de calcul et dessin de reseaux de ventilation</p>
+
+          <p>Conforme aux normes francaises NF DTU 65.14</p>
+
+        </div>
+
+        <div class="features-list">
+
+          <h4>Fonctionnalites:</h4>
+
+          <ul>
+
+            <li>Calcul automatique des diametres selon NF DTU 65.14</li>
+
+            <li>Calcul des pertes de charge lineaires et singulaires</li>
+
+            <li>Dessin interactif du reseau</li>
+
+            <li>Export PDF, DXF, CSV, JSON</li>
+
+            <li>Verification de coherence du reseau</li>
+
+          </ul>
+
+        </div>
+
+        <div class="credits">
+
+
+          <p>&copy; 2024 - Tous droits reserves</p>
+
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+
+        <button id="modal-about-close" class="btn btn-primary">Fermer</button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <div id="modal-confirm" class="modal">
+
+    <div class="modal-content small">
+
+      <div class="modal-header">
+
+        <h2 id="confirm-title">Confirmation</h2>
+
+        <button class="modal-close">&times;</button>
+
+      </div>
+
+      <div class="modal-body">
+
+        <p id="confirm-message"></p>
+
+      </div>
+
+      <div class="modal-footer">
+
+        <button id="confirm-yes" class="btn btn-danger">Oui</button>
+
+        <button id="confirm-no" class="btn btn-secondary">Non</button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <div id="modal-message" class="modal">
+
+    <div class="modal-content small">
+
+      <div class="modal-header">
+
+        <h2 id="message-title">Message</h2>
+
+        <button class="modal-close">&times;</button>
+
+      </div>
+
+      <div class="modal-body">
+
+        <p id="message-text"></p>
+
+      </div>
+
+      <div class="modal-footer">
+
+        <button id="message-ok" class="btn btn-primary">OK</button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <div id="modal-settings" class="modal">
+
+    <div class="modal-content">
+
+      <div class="modal-header">
+
+        <h2>Preferences</h2>
+
+        <button class="modal-close">&times;</button>
+
+      </div>
+
+      <div class="modal-body">
+
+        <div class="settings-section">
+
+          <h4>Vitesses maximales par defaut</h4>
+
+          <div class="settings-grid">
+
+            <div class="setting-item">
+
+              <label for="setting-vitesse-habitation">Habitations:</label>
+
+              <input type="number" id="setting-vitesse-habitation" step="0.1" min="0.1">
+
+            </div>
+
+            <div class="setting-item">
+
+              <label for="setting-vitesse-combles">Combles:</label>
+
+              <input type="number" id="setting-vitesse-combles" step="0.1" min="0.1">
+
+            </div>
+
+            <div class="setting-item">
+
+              <label for="setting-vitesse-bureaux">Bureaux:</label>
+
+              <input type="number" id="setting-vitesse-bureaux" step="0.1" min="0.1">
+
+            </div>
+
+            <div class="setting-item">
+
+              <label for="setting-vitesse-industriel">Industriel:</label>
+
+              <input type="number" id="setting-vitesse-industriel" step="0.1" min="0.1">
+
+            </div>
+
+            <div class="setting-item">
+
+              <label for="setting-vitesse-global">Global:</label>
+
+              <input type="number" id="setting-vitesse-global" step="0.1" min="0.1">
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="settings-section">
+
+          <h4>Parametres du fluide</h4>
+
+          <div class="settings-grid">
+
+            <div class="setting-item">
+
+              <label for="setting-rho">Masse volumique (kg/m3):</label>
+
+              <input type="number" id="setting-rho" step="0.01" min="0.1">
+
+            </div>
+
+            <div class="setting-item">
+
+              <label for="setting-lambda">Coefficient lambda:</label>
+
+              <input type="number" id="setting-lambda" step="0.001" min="0.001">
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="settings-section">
+
+          <h4>Affichage</h4>
+
+          <div class="settings-grid">
+
+            <div class="setting-item">
+
+              <label for="setting-decimals-diametre">Decimales diametre:</label>
+
+              <input type="number" id="setting-decimals-diametre" min="0" max="4">
+
+            </div>
+
+            <div class="setting-item">
+
+              <label for="setting-decimals-vitesse">Decimales vitesse:</label>
+
+              <input type="number" id="setting-decimals-vitesse" min="0" max="4">
+
+            </div>
+
+            <div class="setting-item">
+
+              <label for="setting-decimals-pertes">Decimales pertes:</label>
+
+              <input type="number" id="setting-decimals-pertes" min="0" max="4">
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+
+        <button id="settings-save" class="btn btn-primary">
+
+          <i class="fas fa-save"></i> Enregistrer
+
+        </button>
+
+        <button id="settings-cancel" class="btn btn-secondary">
+
+          <i class="fas fa-times"></i> Annuler
+
+        </button>
+
+        <button id="settings-defaults" class="btn btn-warning">
+
+          <i class="fas fa-undo"></i> Par defaut
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <div id="loading-overlay" class="loading-overlay hidden">
+
+    <div class="loading-content">
+
+      <i class="fas fa-spinner fa-spin"></i>
+
+      <p>Chargement en cours...</p>
+
+    </div>
+
+  </div>
+
+  <script src="modules/tableur.js"></script>
+  <script src="modules/dessin.js"></script>
+  <script src="app.js"></script>
+
+</body>
+
+</html>
+

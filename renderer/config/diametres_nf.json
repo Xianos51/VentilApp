@@ -1,0 +1,5 @@
+{
+  "description": "Diamètres commerciaux selon NF DTU 65.14 et pratiques courantes (France)",
+  "unite": "mm",
+  "valeurs": [80, 100, 125, 160, 200, 250, 315, 400, 500, 630, 800, 1000]
+}

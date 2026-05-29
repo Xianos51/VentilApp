@@ -1,0 +1,969 @@
+/* ============================================
+   Réseau Ventilation Pro - Styles CSS
+   ============================================ */
+
+/* Reset et variables */
+:root {
+    /* Couleurs principales */
+    --primary-color: #2c3e50;
+    --primary-dark: #1a252f;
+    --primary-light: #34495e;
+    --secondary-color: #3498db;
+    --secondary-light: #5dade2;
+    --accent-color: #e74c3c;
+    --success-color: #27ae60;
+    --warning-color: #f39c12;
+    --danger-color: #e74c3c;
+    
+    /* Couleurs de fond */
+    --bg-light: #ecf0f1;
+    --bg-medium: #bdc3c7;
+    --bg-dark: #7f8c8d;
+    --bg-panel: #ffffff;
+    --bg-toolbar: #f8f9fa;
+    
+    /* Textes */
+    --text-primary: #2c3e50;
+    --text-secondary: #7f8c8d;
+    --text-light: #ecf0f1;
+    --text-dark: #2c3e50;
+    
+    /* Bordures */
+    --border-color: #bdc3c7;
+    --border-radius: 4px;
+    
+    /* Ombres */
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.1);
+    --shadow-md: 0 3px 6px rgba(0,0,0,0.15);
+    --shadow-lg: 0 5px 15px rgba(0,0,0,0.2);
+    
+    /* Tailles */
+    --toolbar-height: 48px;
+    --status-height: 28px;
+    --properties-width: 300px;
+    --header-height: 40px;
+    
+    /* Polices */
+    --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --font-size-sm: 12px;
+    --font-size-md: 14px;
+    --font-size-lg: 16px;
+    --font-size-xl: 18px;
+}
+
+/* Reset */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+
+body {
+    font-family: var(--font-family);
+    font-size: var(--font-size-md);
+    color: var(--text-primary);
+    background-color: var(--bg-light);
+    display: flex;
+    flex-direction: column;
+}
+
+/* ============================================
+   Barre de statut
+   ============================================ */
+.status-bar {
+    height: var(--status-height);
+    background-color: var(--primary-dark);
+    color: var(--text-light);
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    font-size: var(--font-size-sm);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.status-bar > div {
+    flex: 1;
+}
+
+.status-left {
+    text-align: left;
+}
+
+.status-center {
+    text-align: center;
+}
+
+.status-right {
+    text-align: right;
+}
+
+/* ============================================
+   Barre d'outils
+   ============================================ */
+.toolbar {
+    height: var(--toolbar-height);
+    background-color: var(--bg-toolbar);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    gap: 10px;
+    overflow-x: auto;
+}
+
+.toolbar-group {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    height: 100%;
+}
+
+.toolbar-group.right {
+    margin-left: auto;
+}
+
+.tool-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    background-color: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: var(--font-size-sm);
+    color: var(--text-primary);
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.tool-btn:hover {
+    background-color: var(--bg-medium);
+    border-color: var(--primary-color);
+}
+
+.tool-btn.active {
+    background-color: var(--secondary-color);
+    color: white;
+    border-color: var(--secondary-color);
+}
+
+.tool-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ============================================
+   Conteneur principal
+   ============================================ */
+.main-container {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+    position: relative;
+}
+
+/* ============================================
+   Volets
+   ============================================ */
+.volet {
+    flex: 1;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    background-color: var(--bg-panel);
+    border-right: 1px solid var(--border-color);
+}
+
+.volet.active {
+    display: flex;
+}
+
+.volet-header {
+    height: var(--header-height);
+    background-color: var(--primary-light);
+    color: var(--text-light);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 15px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.volet-header h2 {
+    font-size: var(--font-size-lg);
+    font-weight: 500;
+}
+
+.volet-actions {
+    display: flex;
+    gap: 8px;
+}
+
+/* ============================================
+   Tableur
+   ============================================ */
+.tableur-controls {
+    padding: 10px 15px;
+    background-color: var(--bg-light);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.control-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.control-group label {
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.control-group input,
+.control-group select {
+    padding: 5px 8px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-size: var(--font-size-sm);
+    background-color: var(--bg-panel);
+}
+
+.control-group input:focus,
+.control-group select:focus {
+    outline: none;
+    border-color: var(--secondary-color);
+}
+
+.handsontable-container {
+    flex: 1;
+    overflow: auto;
+    padding: 10px 15px;
+}
+
+/* Handsontable custom styles */
+.handsontable {
+    border: 1px solid var(--border-color) !important;
+}
+
+.handsontable thead th {
+    background-color: var(--primary-color) !important;
+    color: var(--text-light) !important;
+    font-weight: 500 !important;
+}
+
+.handsontable td {
+    border-right: 1px solid var(--border-color) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+}
+
+.handsontable .selected {
+    background-color: var(--secondary-light) !important;
+}
+
+.handsontable .current {
+    border: 2px solid var(--secondary-color) !important;
+}
+
+.tableur-footer {
+    padding: 8px 15px;
+    background-color: var(--bg-light);
+    border-top: 1px solid var(--border-color);
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+}
+
+.tableur-footer .summary {
+    display: flex;
+    gap: 20px;
+}
+
+.tableur-footer span {
+    font-weight: 500;
+}
+
+/* ============================================
+   Dessin
+   ============================================ */
+.dessin-toolbar {
+    padding: 10px 15px;
+    background-color: var(--bg-light);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.draw-tools {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.draw-tool {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--bg-panel);
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: var(--font-size-lg);
+    color: var(--text-primary);
+    transition: all 0.2s;
+}
+
+.draw-tool:hover {
+    border-color: var(--secondary-color);
+    background-color: var(--bg-medium);
+}
+
+.draw-tool.active {
+    border-color: var(--secondary-color);
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+.draw-options {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.draw-options label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+}
+
+.dessin-area {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    background-color: #f0f0f0;
+    background-image: 
+        linear-gradient(rgba(200,200,200,0.3) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(200,200,200,0.3) 1px, transparent 1px);
+    background-size: 20px 20px;
+}
+
+#canvas-dessin {
+    position: absolute;
+    top: 0;
+    left: 0;
+    cursor: crosshair;
+    user-select: none;
+}
+
+.canvas-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.dessin-footer {
+    padding: 8px 15px;
+    background-color: var(--bg-light);
+    border-top: 1px solid var(--border-color);
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+}
+
+.dessin-footer .summary {
+    display: flex;
+    gap: 20px;
+}
+
+.dessin-footer span {
+    font-weight: 500;
+}
+
+/* ============================================
+   Panneau des propriétés
+   ============================================ */
+.properties-panel {
+    width: var(--properties-width);
+    background-color: var(--bg-panel);
+    border-left: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: transform 0.3s;
+}
+
+.properties-panel.closed {
+    transform: translateX(100%);
+}
+
+.properties-header {
+    height: var(--header-height);
+    background-color: var(--primary-color);
+    color: var(--text-light);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 15px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.properties-header h3 {
+    font-size: var(--font-size-lg);
+    font-weight: 500;
+}
+
+.btn-close {
+    background: none;
+    border: none;
+    color: var(--text-light);
+    cursor: pointer;
+    font-size: var(--font-size-lg);
+    padding: 5px;
+    line-height: 1;
+}
+
+.btn-close:hover {
+    opacity: 0.7;
+}
+
+.properties-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px;
+}
+
+.properties-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--text-secondary);
+    text-align: center;
+}
+
+.properties-empty i {
+    font-size: 32px;
+    margin-bottom: 10px;
+    opacity: 0.5;
+}
+
+.properties-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.properties-form.hidden {
+    display: none;
+}
+
+.form-section {
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 15px;
+}
+
+.form-section h4 {
+    font-size: var(--font-size-sm);
+    color: var(--primary-color);
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-bottom: 10px;
+}
+
+.form-group label {
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.form-input {
+    padding: 8px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-size: var(--font-size-sm);
+    background-color: var(--bg-panel);
+    transition: border-color 0.2s;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--secondary-color);
+}
+
+.form-input:disabled {
+    background-color: var(--bg-medium);
+    cursor: not-allowed;
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    padding-top: 10px;
+    border-top: 1px solid var(--border-color);
+}
+
+/* ============================================
+   Boutons
+   ============================================ */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: var(--font-size-sm);
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.btn:hover {
+    opacity: 0.9;
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-primary {
+    background-color: var(--secondary-color);
+    color: white;
+    border-color: var(--secondary-color);
+}
+
+.btn-primary:hover {
+    background-color: var(--secondary-light);
+    border-color: var(--secondary-light);
+}
+
+.btn-secondary {
+    background-color: var(--bg-medium);
+    color: var(--text-primary);
+    border-color: var(--bg-medium);
+}
+
+.btn-secondary:hover {
+    background-color: var(--bg-dark);
+    border-color: var(--bg-dark);
+}
+
+.btn-danger {
+    background-color: var(--danger-color);
+    color: white;
+    border-color: var(--danger-color);
+}
+
+.btn-danger:hover {
+    background-color: #c0392b;
+    border-color: #c0392b;
+}
+
+.btn-warning {
+    background-color: var(--warning-color);
+    color: white;
+    border-color: var(--warning-color);
+}
+
+.btn-warning:hover {
+    background-color: #d35400;
+    border-color: #d35400;
+}
+
+.btn-small {
+    padding: 4px 8px;
+    font-size: var(--font-size-sm);
+}
+
+/* ============================================
+   Modales
+   ============================================ */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background-color: var(--bg-panel);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-lg);
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-content.small {
+    max-width: 400px;
+}
+
+.modal-header {
+    padding: 15px 20px;
+    background-color: var(--primary-color);
+    color: var(--text-light);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.modal-header h2 {
+    font-size: var(--font-size-lg);
+    font-weight: 500;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    color: var(--text-light);
+    cursor: pointer;
+    font-size: 24px;
+    line-height: 1;
+    padding: 0;
+}
+
+.modal-close:hover {
+    opacity: 0.7;
+}
+
+.modal-body {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.modal-body p {
+    margin-bottom: 15px;
+    line-height: 1.6;
+}
+
+.modal-body ul {
+    margin-left: 20px;
+    margin-bottom: 15px;
+}
+
+.modal-body li {
+    margin-bottom: 8px;
+}
+
+.modal-footer {
+    padding: 15px 20px;
+    background-color: var(--bg-light);
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.app-info {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.app-info h3 {
+    font-size: var(--font-size-xl);
+    color: var(--primary-color);
+    margin-bottom: 5px;
+}
+
+.app-info p {
+    color: var(--text-secondary);
+}
+
+.features-list h4 {
+    color: var(--primary-color);
+    margin-bottom: 10px;
+}
+
+.credits {
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+}
+
+/* Préférences */
+.settings-section {
+    margin-bottom: 20px;
+}
+
+.settings-section h4 {
+    color: var(--primary-color);
+    margin-bottom: 10px;
+    font-size: var(--font-size-md);
+}
+
+.settings-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.setting-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.setting-item label {
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.setting-item input {
+    padding: 8px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-size: var(--font-size-sm);
+    background-color: var(--bg-panel);
+}
+
+.setting-item input:focus {
+    outline: none;
+    border-color: var(--secondary-color);
+}
+
+/* ============================================
+   Chargement
+   ============================================ */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.loading-overlay.hidden {
+    display: none;
+}
+
+.loading-content {
+    text-align: center;
+}
+
+.loading-content i {
+    font-size: 48px;
+    color: var(--secondary-color);
+    margin-bottom: 15px;
+}
+
+.loading-content p {
+    color: var(--text-primary);
+    font-size: var(--font-size-lg);
+}
+
+/* ============================================
+   Scroller
+   ============================================ */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-light);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--bg-medium);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--bg-dark);
+}
+
+/* ============================================
+   States et avertissements
+   ============================================ */
+.status-warning {
+    color: var(--warning-color) !important;
+}
+
+.status-error {
+    color: var(--danger-color) !important;
+}
+
+.status-success {
+    color: var(--success-color) !important;
+}
+
+/* Animation pour les notifications */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.status-message {
+    animation: fadeIn 0.3s ease;
+}
+
+/* ============================================
+   Styles pour les éléments dessinés (Fabric.js)
+   ============================================ */
+/* Ces classes sont appliquées via Fabric.js */
+
+/* Gaine */
+.gaine-line {
+    stroke: #2c3e50;
+    stroke-width: 3;
+    selectable: true;
+    hasControls: true;
+}
+
+.gaine-selected {
+    stroke: #e74c3c;
+}
+
+/* Bouche */
+.bouche-circle {
+    fill: #3498db;
+    stroke: #2980b9;
+    stroke-width: 2;
+    originX: center;
+    originY: center;
+}
+
+/* Caisson */
+.caisson-rect {
+    fill: #e74c3c;
+    stroke: #c0392b;
+    stroke-width: 2;
+    originX: center;
+    originY: center;
+}
+
+/* Jonction */
+.jonction-path {
+    fill: #7f8c8d;
+    stroke: #555;
+    stroke-width: 2;
+}
+
+/* Coude */
+.coude-path {
+    fill: none;
+    stroke: #7f8c8d;
+    stroke-width: 3;
+}
+
+/* Texte */
+.element-text {
+    fill: #2c3e50;
+    font-size: 12;
+    font-family: var(--font-family);
+    textBackgroundColor: 'rgba(255,255,255,0.7)';
+    padding: 2;
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+@media (max-width: 1200px) {
+    :root {
+        --properties-width: 250px;
+    }
+}
+
+@media (max-width: 1000px) {
+    .toolbar {
+        flex-wrap: wrap;
+    }
+    
+    .toolbar-group {
+        flex: 1;
+        min-width: fit-content;
+    }
+}
+
+@media (max-width: 768px) {
+    .properties-panel {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 100;
+        transform: translateX(100%);
+    }
+    
+    .properties-panel.active {
+        transform: translateX(0);
+    }
+    
+    .volet {
+        border-right: none;
+    }
+}
+
+/* ============================================
+   Print / PDF Styles
+   ============================================ */
+@media print {
+    .toolbar,
+    .status-bar,
+    .properties-panel,
+    .modal,
+    .dessin-toolbar {
+        display: none !important;
+    }
+    
+    .main-container {
+        height: auto;
+    }
+    
+    .volet {
+        display: block !important;
+        page-break-inside: avoid;
+    }
+}

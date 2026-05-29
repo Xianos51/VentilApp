@@ -1,0 +1,60 @@
+{
+  "name": "app-reseau-ventilation",
+  "version": "1.0.0",
+  "description": "Application de calcul et dessin de réseaux de ventilation - Normes NF DTU 65.14",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --disable-gpu",
+    "build": "electron-builder",
+    "build:win": "electron-builder --win --x64",
+    "build:dir": "electron-builder --dir --x64"
+  },
+  "author": "Vibe App",
+  "license": "MIT",
+  "dependencies": {
+    "electron": "^29.0.0",
+    "electron-builder": "^24.13.3",
+    "jspdf": "^2.5.1",
+    "html2canvas": "^1.4.1",
+    "fabric": "^5.3.1",
+    "handsontable": "^14.0.0",
+    "@fortawesome/fontawesome-free": "^6.4.0"
+  },
+  "devDependencies": {
+    "electron": "^29.0.0"
+  },
+  "build": {
+    "appId": "com.vibe.reseauventilation",
+    "productName": "Réseau Ventilation Pro",
+    "files": [
+      "**/*",
+      "renderer/**/*",
+      "node_modules/**/*"
+    ],
+    "directories": {
+      "buildResources": "assets",
+      "output": "dist"
+    },
+    "win": {
+      "target": ["nsis", "portable"],
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "deleteAppDataOnUninstall": true
+    },
+    "portable": {
+      "artifactName": "reseau-ventilation-portable-${version}.${arch}.${ext}"
+    }
+  },
+  "keywords": [
+    "ventilation",
+    "réseau",
+    "calcul",
+    "DTU 65.14",
+    "pertes de charge",
+    "gaines"
+  ]
+}

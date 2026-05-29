@@ -1,0 +1,40 @@
+{
+  "description": "Coefficients de pertes de charge singulieres (K) - Source: Aldes, Atlantic, tableaux standards",
+  "unite": "sans dimension",
+  "coudes": {
+    "90_degrees": 0.25,
+    "45_degrees": 0.15,
+    "90_degrees_2_parties": 0.20,
+    "90_degrees_3_parties": 0.30
+  },
+  "jonctions": {
+    "t_branchement": 0.5,
+    "t_droit": 0.3,
+    "y_branchement": 0.4,
+    "y_droit": 0.25,
+    "reduction_conique": 0.1,
+    "elargissement_conique": 0.05
+  },
+  "entrees_sorties": {
+    "entree_normale": 0.5,
+    "sortie_normale": 1.0,
+    "entree_evasée": 0.1,
+    "sortie_evasée": 0.05,
+    "grille": 1.5,
+    "bouche": 0.8
+  },
+  "autres": {
+    "vanne_papillon_ouverte": 0.1,
+    "vanne_papillon_mi_ouverte": 2.0,
+    "vanne_papillon_fermee": 100.0,
+    "clapet_anti_retour": 0.5,
+    "filtre": 1.0,
+    "silencieux": 0.3
+  },
+  "notes": [
+    "Les valeurs sont indicatives et peuvent varier selon les fabricants",
+    "Pour les coudes, le coefficient dépend du rayon de courbure",
+    "Pour les jonctions, le coefficient dépend du rapport des débits",
+    "Toujours vérifier avec les données constructeur"
+  ]
+}
