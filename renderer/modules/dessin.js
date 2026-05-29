@@ -144,6 +144,55 @@ class DessinModule {
             }
         });
         
+        // Gestion du déplacement avec le clic molette (bouton du milieu)
+        this.isPanning = false;
+        this.lastPanPoint = null;
+        
+        this.fabricCanvas.on('mouse:down', (opt) => {
+            // Vérifier si c'est le bouton du milieu (molette) - bouton 1 dans les événements de souris
+            if (opt.e.button === 1) {
+                this.isPanning = true;
+                this.lastPanPoint = new fabric.Point(opt.e.offsetX, opt.e.offsetY);
+                this.canvas.style.cursor = 'grab';
+                opt.e.preventDefault();
+                opt.e.stopPropagation();
+            }
+        });
+        
+        this.fabricCanvas.on('mouse:move', (opt) => {
+            if (this.isPanning && this.lastPanPoint) {
+                const currentPoint = new fabric.Point(opt.e.offsetX, opt.e.offsetY);
+                const delta = {
+                    x: currentPoint.x - this.lastPanPoint.x,
+                    y: currentPoint.y - this.lastPanPoint.y
+                };
+                
+                // Déplacer le viewport
+                const vpt = this.fabricCanvas.viewportTransform;
+                if (vpt) {
+                    vpt[4] += delta.x;
+                    vpt[5] += delta.y;
+                    this.fabricCanvas.setViewportTransform(vpt);
+                    this.fabricCanvas.renderAll();
+                }
+                
+                this.lastPanPoint = currentPoint;
+                opt.e.preventDefault();
+                opt.e.stopPropagation();
+            }
+        });
+        
+        this.fabricCanvas.on('mouse:up', (opt) => {
+            if (opt.e.button === 1) {
+                this.isPanning = false;
+                this.lastPanPoint = null;
+                this.canvas.style.cursor = '';
+                this.setToolCursor();
+                opt.e.preventDefault();
+                opt.e.stopPropagation();
+            }
+        });
+        
         // Dessiner la grille
         this.drawGrid();
     }
@@ -439,6 +488,22 @@ class DessinModule {
         // Detecter si on se connecte a un element existant
         const nearElement = this.findElementAtPoint(endPoint, 20);
         
+        // Vérifier si le point de départ est connecté à un élément existant
+        const startNearElement = this.findElementAtPoint(this.startPoint, 20);
+        
+        // Vérifier si la gaine est connectée à au moins un élément (début ou fin)
+        const isConnected = nearElement !== null || startNearElement !== null;
+        
+        // Si la gaine n'est pas connectée, afficher un message d'erreur et annuler
+        if (!isConnected) {
+            this.showMessage('Erreur', 'Une gaine doit être connectée à au moins un élément (bouche, caisson, jonction ou autre gaine).');
+            this.fabricCanvas.remove(this.currentElement);
+            this.currentElement = null;
+            this.drawing = false;
+            this.startPoint = null;
+            return;
+        }
+        
         // Creer la gaine finale
         const gaine = {
             id: this.nextId++,
@@ -454,13 +519,16 @@ class DessinModule {
             pertesCharge: null,
             pertesSingulieres: 0,
             nom: `T${this.nextId - 1}`,
-            connectedTo: nearElement ? nearElement.id : null,
-            connectionPoint: nearElement ? { x: endPoint.x, y: endPoint.y } : null
+            connectedTo: nearElement ? nearElement.id : (startNearElement ? startNearElement.id : null),
+            connectionPoint: nearElement ? { x: endPoint.x, y: endPoint.y } : (startNearElement ? { x: this.startPoint.x, y: this.startPoint.y } : null)
         };
         
         // Si on se connecte a un element existant, creer une jonction automatique
         if (nearElement && nearElement.type !== 'gaine') {
             this.createAutoJonction(this.startPoint, endPoint, gaine, nearElement);
+        } else if (startNearElement && startNearElement.type !== 'gaine') {
+            // Si c'est le point de départ qui est connecté, créer une jonction
+            this.createAutoJonction(endPoint, this.startPoint, gaine, startNearElement);
         }
         
         // Calculer les proprieties
@@ -478,6 +546,12 @@ class DessinModule {
             this.connections.push({
                 from: gaine.id,
                 to: nearElement.id,
+                type: 'connection'
+            });
+        } else if (startNearElement) {
+            this.connections.push({
+                from: gaine.id,
+                to: startNearElement.id,
                 type: 'connection'
             });
         }
@@ -549,6 +623,17 @@ class DessinModule {
                 const dy = (el.y || 0) - point.y;
                 const distance = Math.sqrt(dx * dx + dy * dy);
                 if (distance <= radius) {
+                    return el;
+                }
+            } else if (el.type === 'gaine' || el.type === 'coude') {
+                // Pour les gaines et coudes, vérifier les extrémités
+                const dx1 = (el.x1 || 0) - point.x;
+                const dy1 = (el.y1 || 0) - point.y;
+                const dx2 = (el.x2 || 0) - point.x;
+                const dy2 = (el.y2 || 0) - point.y;
+                const distance1 = Math.sqrt(dx1 * dx1 + dy1 * dy1);
+                const distance2 = Math.sqrt(dx2 * dx2 + dy2 * dy2);
+                if (distance1 <= radius || distance2 <= radius) {
                     return el;
                 }
             }
@@ -1099,6 +1184,16 @@ class DessinModule {
     showContextMenu(target, event) {
         event.preventDefault();
         this.showProperties(target);
+    }
+    
+    showMessage(title, message) {
+        // Afficher un message dans la barre de statut ou une alerte
+        if (window.ventilationApp && window.ventilationApp.showMessage) {
+            window.ventilationApp.showMessage(title, message);
+        } else {
+            // Afficher une alerte simple si l'application n'est pas disponible
+            alert(`${title}: ${message}`);
+        }
     }
     
     clearAll() {
