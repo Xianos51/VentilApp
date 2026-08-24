@@ -331,9 +331,11 @@ class DessinModule {
             this.currentElement = null;
         });
         
-        // Redimensionnement
+        // Redimensionnement (throttle pour eviter le lag pendant le resize)
+        let resizeTimer = null;
         window.addEventListener('resize', () => {
-            this.resizeCanvas();
+            if (resizeTimer) clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => this.resizeCanvas(), 150);
         });
     }
     
@@ -470,15 +472,24 @@ class DessinModule {
     updateCoudeDrawing(startPoint, endPoint) {
         if (!this.currentElement) return;
         
-        // Calculer l'arc
+        // Recreer le Path a chaque deplacement: fabric ne recalcule pas la geometrie
+        // d'un Path existant quand on modifie son attribut path via set().
+        this.fabricCanvas.remove(this.currentElement);
+        
         const center = new fabric.Point((startPoint.x + endPoint.x) / 2, (startPoint.y + endPoint.y) / 2);
         const radius = Math.sqrt(
             Math.pow(endPoint.x - center.x, 2) + Math.pow(endPoint.y - center.y, 2)
-        );
+        ) || 1;
         
-        // Simple arc pour l'instant
         const path = `M ${startPoint.x} ${startPoint.y} A ${radius} ${radius} 0 0 1 ${endPoint.x} ${endPoint.y}`;
-        this.currentElement.set({ path: path });
+        this.currentElement = new fabric.Path(path, {
+            stroke: '#7f8c8d',
+            strokeWidth: 3,
+            fill: '',
+            selectable: false,
+            evented: false
+        });
+        this.fabricCanvas.add(this.currentElement);
         this.fabricCanvas.renderAll();
     }
     

@@ -156,6 +156,8 @@ class TableurModule {
         const rowsToRemove = [...new Set(selected.map(s => s[0]))].sort((a, b) => b - a);
         rowsToRemove.forEach(row => this.data.splice(row, 1));
         if (this.hot) this.hot.loadData(this.data);
+        this.calculateAll();
+        this.updateSummary();
     }
     
     clearAll() {
@@ -195,25 +197,26 @@ class TableurModule {
         this.data.forEach(row => {
             const vMax = row.vitesseMax !== null && row.vitesseMax !== '' && !isNaN(row.vitesseMax) ? parseFloat(row.vitesseMax) : this.config.vitesseMax;
             const debit = parseFloat(row.debit) || 0;
-            const longueur = parseFloat(row.longueur) || 0;
             const diametreTheorique = this.calculerDiametreTheorique(debit, vMax);
             const diametreCommercial = this.trouverDiametreCommercial(diametreTheorique);
             const vitesseReelle = this.calculerVitesseReelle(debit, diametreCommercial);
             const pertesCharge = this.calculerPertesCharge(vitesseReelle, diametreCommercial, this.config.lambda, this.config.rho);
             row.diametre = diametreCommercial;
-            row.vitesseReelle = vitesseReelle.toFixed(2);
-            row.pertesCharge = pertesCharge.toFixed(2);
+            row.vitesseReelle = isFinite(vitesseReelle) ? vitesseReelle.toFixed(2) : '';
+            row.pertesCharge = isFinite(pertesCharge) ? pertesCharge.toFixed(2) : '';
             row.vitesseMax = vMax;
         });
-        if (this.hot) this.hot.loadData(this.data);
+        if (this.hot) this.hot.render();
     }
     
     calculerDiametreTheorique(debit, vitesseMax) {
+        if (!vitesseMax || vitesseMax <= 0 || !debit || debit <= 0) return 0;
         const Q = debit / 3600;
         return Math.sqrt((4 * Q) / (Math.PI * vitesseMax));
     }
     
     trouverDiametreCommercial(diametreTheorique) {
+        if (!diametreTheorique || diametreTheorique <= 0) return this.config.diametres[0] || 80;
         const dTheoriqueMm = diametreTheorique * 1000;
         for (let i = 0; i < this.config.diametres.length; i++) {
             if (this.config.diametres[i] >= dTheoriqueMm) return this.config.diametres[i];
@@ -222,12 +225,14 @@ class TableurModule {
     }
     
     calculerVitesseReelle(debit, diametre) {
+        if (!diametre || diametre <= 0 || !debit || debit <= 0) return 0;
         const Q = debit / 3600;
         const D = diametre / 1000;
         return (4 * Q) / (Math.PI * D * D);
     }
     
     calculerPertesCharge(vitesse, diametre, lambda, rho) {
+        if (!diametre || diametre <= 0 || !vitesse || vitesse <= 0) return 0;
         const D = diametre / 1000;
         return lambda * (1 / D) * (rho * vitesse * vitesse) / 2;
     }

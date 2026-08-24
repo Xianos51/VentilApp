@@ -110,20 +110,6 @@ ipcMain.handle('export-json', async (event, { data, fileName }) => {
   }
 });
 
-ipcMain.handle('export-pdf', async (event, { htmlContent, fileName }) => {
-  try {
-    const { filePath } = await dialog.showSaveDialog(mainWindow, {
-      title: 'Exporter PDF',
-      defaultPath: fileName || 'schema.pdf',
-      filters: [{ name: 'PDF', extensions: ['pdf'] }]
-    });
-    if (!filePath) return { success: false, message: 'Export annule' };
-    return { success: true, path: filePath };
-  } catch (error) {
-    return { success: false, message: error.message };
-  }
-});
-
 ipcMain.handle('export-dxf', async (event, { dxfContent, fileName }) => {
   try {
     const { filePath } = await dialog.showSaveDialog(mainWindow, {

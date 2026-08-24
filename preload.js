@@ -12,7 +12,6 @@ window.electronAPI = {
   // Export
   exportCsv: (data, fileName) => ipcRenderer.invoke('export-csv', { data, fileName }),
   exportJson: (data, fileName) => ipcRenderer.invoke('export-json', { data, fileName }),
-  exportPdf: (htmlContent, fileName) => ipcRenderer.invoke('export-pdf', { htmlContent, fileName }),
   exportDxf: (dxfContent, fileName) => ipcRenderer.invoke('export-dxf', { dxfContent, fileName }),
   
   // Import
