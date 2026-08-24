@@ -382,8 +382,8 @@ class DessinModule {
     }
     
     drawGrid() {
-        // Supprimer l'ancienne grille
-        const grid = this.fabricCanvas.getObjects('grid');
+        // Supprimer l'ancienne grille (fabric ecrase l'option type, on filtre via isGrid)
+        const grid = this.fabricCanvas.getObjects().filter(obj => obj.isGrid === true);
         grid.forEach(obj => this.fabricCanvas.remove(obj));
         
         if (!this.gridEnabled) return;
@@ -400,7 +400,7 @@ class DessinModule {
                 strokeWidth: gridWidth,
                 selectable: false,
                 evented: false,
-                type: 'grid'
+                isGrid: true
             });
             this.fabricCanvas.add(line);
         }
@@ -412,10 +412,15 @@ class DessinModule {
                 strokeWidth: gridWidth,
                 selectable: false,
                 evented: false,
-                type: 'grid'
+                isGrid: true
             });
             this.fabricCanvas.add(line);
         }
+        
+        // Garder la grille en arriere-plan
+        this.fabricCanvas.getObjects().filter(obj => obj.isGrid === true).forEach(obj => {
+            this.fabricCanvas.sendToBack(obj);
+        });
         
         this.fabricCanvas.renderAll();
     }
@@ -1397,7 +1402,7 @@ class DessinModule {
         this.updateSummary();
         
         return { success: true, message: `Reseau equilibre: ${debitParBouche.toFixed(0)} m3/h par bouche` };
-    };
+    }
     
     /**
      * Calcule les pertes de charge singulieres reelles basees sur les connexions
@@ -1427,7 +1432,7 @@ class DessinModule {
         
         this.troncons.forEach(troncon => this.updateElementOnCanvas(troncon));
         this.updateSummary();
-    };
+    }
     
     /**
      * Detecte et cree automatiquement les jonctions entre les gaines
@@ -1478,7 +1483,7 @@ class DessinModule {
         });
         
         this.updateSummary();
-    };
+    }
     
     /**
      * Trouve tous les elements a proximite d'un point
@@ -1504,7 +1509,7 @@ class DessinModule {
             }
         });
         return results;
-    };
+    }
     
     // ============================================
     

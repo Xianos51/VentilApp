@@ -58,9 +58,9 @@ class TableurModule {
     
     initHandsontable() {
         const container = document.getElementById('handsontable-container');
-        Handsontable.licenseKey = 'non-commercial-and-evaluation';
         
         this.hot = new Handsontable(container, {
+            licenseKey: 'non-commercial-and-evaluation',
             data: this.data,
             colHeaders: [
                 'ID',
